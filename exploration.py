@@ -44,14 +44,18 @@ print(draws)
 '''
 
 # Exercice 2
-
+'''
 print(df.dtypes)
 for column in df.columns:
     try:
-        df[column] = df[column].astype('float64')
+        df[column] = df[column].astype(float)
     except Exception as e:
         print("An error occurred:", str(e))
-
+for column in df_city.columns:
+    try:
+        df_city[column] = df_city[column].astype(float)
+    except Exception as e:
+        print("An error occurred:", str(e))
 print(df_city.dtypes)
 
 print(df.ndim)
@@ -65,7 +69,7 @@ duplicates = grouped[grouped > 1]
 x = df_city[df_city['LIBGEO'].isin(duplicates.index)]['CODGEO'].unique()
 print(len(x))
 
-double = df_city[df_city['CODGEO'].isin(x)].nunique()
+double = df_city[df_city['CODGEO'].isin(x)]
 print(double)
 invdouble = df_city[~df_city['CODGEO'].isin(x)]
 print(invdouble)
@@ -77,3 +81,76 @@ print(invdouble)
 
 print(double.describe())
 print(invdouble.describe())
+
+print(invdouble)
+print(double[double['NBPERSMENFISC16'] > 100000])
+
+print(df_city[df_city['LIBGEO'].isin(['Montreuil', 'Saint-Denis'])])
+'''
+
+# Exercice 3
+'''
+df = df.set_index('INSEE commune')
+df_city = df_city.set_index('CODGEO')
+print(df)
+print(df_city)
+df['dep'] = df.index.str.slice(stop=2)
+df_city['dep'] = df_city.index.str.slice(stop=2)
+
+print(df)
+print(df_city)
+
+df_log = df.groupby('dep').count()[:5]
+
+print(df_log)
+df_log.plot(kind='bar')
+plt.show()
+
+df_sorted = df.groupby('dep').count().sort_values('CO2 biomasse hors-total')[:10]
+print(df_sorted)
+'''
+
+# Exercice 4
+'''
+df_copy = df.copy()
+df_copy2 = df.copy()
+
+df_copy = df_copy.set_index('dep')
+df_copy2 = df_copy2.reset_index()
+
+import timeit
+def somme_func_copy():
+    somme = df_copy.groupby('dep')['CO2 biomasse hors-total'].sum()
+    return somme
+def somme_func_copy2():
+    somme = df_copy2.groupby('dep')['CO2 biomasse hors-total'].sum()
+    return somme
+
+temps_copy = timeit.timeit(somme_func_copy, number=1)
+temps_copy2 = timeit.timeit(somme_func_copy2, number=1)
+
+print(str(temps_copy) + " secondes")
+print(str(temps_copy2) + " secondes")
+'''
+
+# Exercice 5
+'''
+df_wide = df.copy()
+print(df_wide.columns)
+
+id_vars = ['Commune', 'dep']
+df_wide = df_wide.drop(['INSEE commune'], axis=1)
+
+df_long = pd.melt(df_wide, id_vars='Commune', var_name='Secteur', value_name='Emissions')
+
+print(df_long)
+
+df_long_sum = df_long.groupby('Secteur')['Emissions'].sum().reset_index()
+
+print(df_long_sum)
+
+plt.bar(df_long_sum['Secteur'], df_long_sum['Emissions'])
+plt.show()
+'''
+
+# Exercice 6
