@@ -57,7 +57,6 @@ for column in df_city.columns:
     except Exception as e:
         print("An error occurred:", str(e))
 print(df_city.dtypes)
-
 print(df.ndim)
 print(df_city.ndim)
 
@@ -154,3 +153,18 @@ plt.show()
 '''
 
 # Exercice 6
+
+df_wide = df.copy()
+
+# Exercice 7
+
+df_copy = df.copy()
+df_city_copy = df_city.copy()
+
+df_copy = df_copy.set_index('INSEE commune')
+df_city_copy = df_city_copy.set_index('CODGEO')
+aime = df_copy.loc['73006']
+aime_insee = df_city_copy.loc['73006']
+jointure = df_copy.merge(df_city_copy, left_on="INSEE commune", right_on="CODGEO")
+print(jointure)
+
